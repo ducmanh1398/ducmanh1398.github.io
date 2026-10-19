@@ -798,7 +798,11 @@ $('rCount').addEventListener('change',()=>{
   const o=$('rCount').value==='other'; $('rOther').hidden=!o; $('rErr').textContent='';
   if(o) $('rOther').focus(); else $('rOther').value='';
 });
-$('rOther').addEventListener('input',e=>{ e.target.value=e.target.value.replace(/\D+/g,'').slice(0,2); });
+const MAX_GUESTS_MSG='Vui lòng nhập số người tham dự tối đa 50.';
+$('rOther').addEventListener('input',e=>{
+  e.target.value=e.target.value.replace(/\D+/g,'').slice(0,2);
+  $('rErr').textContent=parseInt(e.target.value,10)>50?MAX_GUESTS_MSG:'';
+});
 document.querySelectorAll('input[name=attend]').forEach(r=>r.addEventListener('change',syncCount));
 syncCount();
 let guestName='';   // tên khách lấy từ ?to= ở phần cover
@@ -807,6 +811,7 @@ $('rsvpForm').addEventListener('submit',async e=>{
   const attend=document.querySelector('input[name=attend]:checked').value, cnt=$('rCount').value;
   if(attend==='yes' && !cnt){ $('rErr').textContent='Vui lòng chọn số người tham dự.'; $('rCount').focus(); return; }
   if(attend==='yes' && cnt==='other' && !(parseInt($('rOther').value,10)>=1)){ $('rErr').textContent='Vui lòng nhập số người tham dự.'; $('rOther').focus(); return; }
+  if(attend==='yes' && cnt==='other' && parseInt($('rOther').value,10)>50){ $('rErr').textContent=MAX_GUESTS_MSG; $('rOther').focus(); return; }
   $('rErr').textContent='';
   // gửi dạng text/plain để trình duyệt không gửi preflight CORS (Apps Script không trả lời preflight)
   const btn=e.target.querySelector('.send'), label=btn.textContent;
